@@ -1,0 +1,422 @@
+{
+  "rules": [
+    {
+      "id": "test"
+    },
+    {
+      "id": "smartapesg-001",
+      "name": "SmartApeSG Script Injection",
+      "description": "Detects injection of SmartApeSG malicious scripts into web pages from compromised websites.",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "high",
+      "logic": {
+        "type": "substring_match",
+        "field": "http.response.body",
+        "values": [
+          "SmartApeSG script injected"
+        ]
+      },
+      "tags": [
+        "malware",
+        "script-injection",
+        "smartapesg"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/04/06/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/04/06/index.html",
+      "original_field": "http.response.body",
+      "warnings": [
+        "unverified field for http: http.response.body"
+      ]
+    },
+    {
+      "id": "smartapesg-002",
+      "name": "SmartApeSG Fake CAPTCHA Page",
+      "description": "Detects HTTP responses containing SmartApeSG fake CAPTCHA pages with ClickFix instructions.",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "substring_match",
+        "field": "http.response.body",
+        "values": [
+          "fake CAPTCHA",
+          "ClickFix"
+        ]
+      },
+      "tags": [
+        "malware",
+        "phishing",
+        "smartapesg"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/04/06/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/04/06/index.html",
+      "original_field": "http.response.body",
+      "warnings": [
+        "unverified field for http: http.response.body"
+      ]
+    },
+    {
+      "id": "smartapesg-003",
+      "name": "SmartApeSG Malware Filename Detection",
+      "description": "Detects files associated with SmartApeSG campaign based on known filenames.",
+      "log_type": "files",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "exact_match",
+        "field": "files.filename",
+        "values": [
+          "2026-04-06-SmartApeSG-notes.txt.zip",
+          "2026-04-06-SmartApeSG-HTTPS-traffic.zip",
+          "2026-04-06-SmartApeSG-traffic.pcap.zip",
+          "2026-04-06-SmartApeSG-files.zip"
+        ]
+      },
+      "tags": [
+        "malware",
+        "smartapesg",
+        "file-detection"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/04/06/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/04/06/index.html",
+      "original_field": "files.filename",
+      "warnings": [
+        "unverified field for files: files.filename"
+      ]
+    },
+    {
+      "id": "KT-001",
+      "name": "Suspicious .top domain HTTP requests",
+      "description": "Detect HTTP traffic to suspicious .top domains associated with MintsLoader activity",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "high",
+      "logic": {
+        "type": "domain_suffix_match",
+        "field": "host",
+        "values": [
+          ".top"
+        ]
+      },
+      "tags": [
+        "mintsloader",
+        "kongtuke",
+        "malware",
+        "http"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "host",
+      "warnings": []
+    },
+    {
+      "id": "KT-002",
+      "name": "GhostWeaver RAT TLS traffic",
+      "description": "Detect TLSv1.0 traffic to known GhostWeaver RAT IP 173.232.146.62",
+      "log_type": "conn",
+      "enabled": true,
+      "severity": "critical",
+      "logic": {
+        "type": "exact_match",
+        "field": "id.resp_h",
+        "values": [
+          "173.232.146.62"
+        ]
+      },
+      "tags": [
+        "ghostweaver",
+        "rat",
+        "tls",
+        "kongtuke"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "dest_ip",
+      "warnings": [
+        "field remapped: dest_ip -> id.resp_h"
+      ]
+    },
+    {
+      "id": "KT-003",
+      "name": "Suspicious PowerShell script filename",
+      "description": "Detect execution or presence of suspicious PowerShell script 'script.ps1' in roaming directory",
+      "log_type": "files",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "exact_match",
+        "field": "filename",
+        "values": [
+          "script.ps1"
+        ]
+      },
+      "tags": [
+        "powershell",
+        "kongtuke",
+        "mintsloader"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "filename",
+      "warnings": []
+    },
+    {
+      "id": "KT-004",
+      "name": "Scheduled tasks related to KongTuke infection",
+      "description": "Detect creation or execution of scheduled tasks named Google_Maintenance_Worker or Set-SmbServerConfiguration",
+      "log_type": "files",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "list_contains",
+        "field": "task_name",
+        "values": [
+          "Google_Maintenance_Worker",
+          "Set-SmbServerConfiguration"
+        ]
+      },
+      "tags": [
+        "persistence",
+        "kongtuke",
+        "scheduled_tasks"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "task_name",
+      "warnings": [
+        "unverified field for files: task_name"
+      ]
+    },
+    {
+      "id": "KT-005",
+      "name": "Suspicious user agent from KongTuke traffic",
+      "description": "Detect HTTP user agent matching KongTuke observed user agent string",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "low",
+      "logic": {
+        "type": "exact_match",
+        "field": "user_agent",
+        "values": [
+          "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/144.0.0.0 safari/537.36 edg/144.0.0.0"
+        ]
+      },
+      "tags": [
+        "user_agent",
+        "kongtuke",
+        "http"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "user_agent",
+      "warnings": []
+    },
+    {
+      "id": "ZKONG-001",
+      "name": "Detect HTTP requests to suspicious .top domains",
+      "description": "Detects HTTP GET requests to known malicious .top domains used by MintsLoader",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "high",
+      "logic": {
+        "type": "domain_suffix_match",
+        "field": "host",
+        "values": [
+          "sbwur1.top",
+          "gecdfcjcbcmmakk.top"
+        ]
+      },
+      "tags": [
+        "malware",
+        "mintsloader",
+        "network-ioc"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "host",
+      "warnings": []
+    },
+    {
+      "id": "ZKONG-003",
+      "name": "Detect HTTP requests to KongTuke injected script URIs",
+      "description": "Detects HTTP requests to suspicious injected script URIs used in KongTuke ClickFix activity",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "substring_match",
+        "field": "uri",
+        "values": [
+          "/1d2g.js",
+          "/js.php"
+        ]
+      },
+      "tags": [
+        "malware",
+        "kongtuke",
+        "network-heuristic"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/02/02/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/02/02/index.html",
+      "original_field": "uri",
+      "warnings": []
+    },
+    {
+      "id": "ZK-2026-001",
+      "name": "Suspicious ClickFix URI Paths",
+      "description": "Detect HTTP requests to suspicious ClickFix related URI paths on compromised domains.",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "substring_match",
+        "field": "uri",
+        "values": [
+          "/handler/dashboard-response.js",
+          "/handler/session-component.php",
+          "/handler/auth-controller.js"
+        ]
+      },
+      "tags": [
+        "malware",
+        "clickfix",
+        "remcos"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/01/22/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/01/22/index.html",
+      "original_field": "uri",
+      "warnings": []
+    },
+    {
+      "id": "ZK-2026-002",
+      "name": "Remcos RAT C2 IP Traffic",
+      "description": "Detect network connections to known Remcos RAT C2 IP address over HTTPS.",
+      "log_type": "conn",
+      "enabled": true,
+      "severity": "high",
+      "logic": {
+        "type": "exact_match",
+        "field": "id.resp_h",
+        "values": [
+          "109.172.91.23"
+        ]
+      },
+      "tags": [
+        "remcos",
+        "rat",
+        "c2"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/01/22/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/01/22/index.html",
+      "original_field": "id.resp_h",
+      "warnings": []
+    },
+    {
+      "id": "ZK-2026-003",
+      "name": "ClickFix Initial Malware Delivery Domains",
+      "description": "Detect HTTP traffic to initial malware delivery domains used by ClickFix technique.",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "list_contains",
+        "field": "host",
+        "values": [
+          "flautister.com",
+          "oilporter.com"
+        ]
+      },
+      "tags": [
+        "clickfix",
+        "malware",
+        "delivery"
+      ],
+      "references": [
+        "https://www.malware-traffic-analysis.net/2026/01/22/index.html"
+      ],
+      "source_url": "https://www.malware-traffic-analysis.net/2026/01/22/index.html",
+      "original_field": "host",
+      "warnings": []
+    },
+    {
+      "id": "ZK-2026-001",
+      "name": "Detect Pastebin raw URI for Lumma Stealer follow-up",
+      "description": "Detect HTTP requests to Pastebin raw URI /raw/xRmmdinT used to retrieve follow-up infection commands",
+      "log_type": "http",
+      "enabled": true,
+      "severity": "medium",
+      "logic": {
+        "type": "exact_match",
+        "field": "uri",
+        "values": [
+          "/raw/xRmmdinT"
+        ]
+      },
+      "tags": [
+        "malware",
+        "lumma_stealer",
+        "pastebin"
+      ],
+      "references": [
+        "https://isc.sans.edu/diary/32628/"
+      ],
+      "source_url": "https://isc.sans.edu/diary/32628/",
+      "original_field": "uri",
+      "warnings": []
+    },
+    {
+      "id": "ZK-2026-002",
+      "name": "Detect HTTPS traffic to fileless-market.cc C2 domain",
+      "description": "Detect HTTPS connections to suspicious C2 domain fileless-market.cc used by Lumma Stealer follow-up infection",
+      "log_type": "conn",
+      "enabled": true,
+      "severity": "high",
+      "logic": {
+        "type": "exact_match",
+        "field": "id.resp_h",
+        "values": [
+          "fileless-market.cc"
+        ]
+      },
+      "tags": [
+        "malware",
+        "lumma_stealer",
+        "c2"
+      ],
+      "references": [
+        "https://isc.sans.edu/diary/32628/"
+      ],
+      "source_url": "https://isc.sans.edu/diary/32628/",
+      "original_field": "id.resp_h",
+      "warnings": []
+    }
+  ],
+  "existing_count": 14,
+  "incoming_count": 2,
+  "merged_count": 16
+}
